@@ -12,13 +12,13 @@ spec:
         name: springboot
     spec:
       containers:
-      - image: dockerhandson/spring-boot-mongo:latest
+      - image: anildbee1/spring-boot-mongo:latest
         name: springboot
         ports:
         - name: springboot
-          containerPort: 8080       
+          containerPort: 8080
 ---
-# Load Balancer Service
+# ClusterIP Service for Ingress
 apiVersion: v1
 kind: Service
 metadata:
@@ -26,7 +26,7 @@ metadata:
     name: springboot
   name: springboot
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - port: 80
       targetPort: 8080
@@ -43,7 +43,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 5Gi    
+      storage: 500Mi
 ---
 # Mongo host path rc
 apiVersion: v1
@@ -62,7 +62,7 @@ spec:
       volumes:
       - name: ebspvc
         persistentVolumeClaim:
-          claimName: ebspvc-mango     
+          claimName: ebspvc-mango
       containers:
       - image: mongo
         name: mongo
@@ -73,7 +73,6 @@ spec:
         volumeMounts:
         - name: ebspvc
           mountPath: /data/db
-...
 ---
 # Mongo Node Port RC
 apiVersion: v1
