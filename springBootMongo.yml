@@ -1,43 +1,22 @@
-# Mongo host path rc
-apiVersion: v1
-kind: ReplicationController
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  labels:
-    name: mongo
-  name: mongo-controller
+  name: nginx-deployment
 spec:
-  replicas: 1
+  replicas: 2
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: nginx
   template:
     metadata:
+      name: nginx-pod
       labels:
-        name: mongo
+        app: nginx
     spec:
-      volumes:
-      - name: ebspvc
-        persistentVolumeClaim:
-          claimName: ebspvc-mango
       containers:
-      - image: mongo
-        name: mongo
+      - name: nginx-container
+        image: nginx:1.7.9
         ports:
-        - name: mongo
-          containerPort: 27017
-          hostPort: 27017
-        volumeMounts:
-        - name: ebspvc
-          mountPath: /data/db
----
-# Mongo Node Port RC
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    name: mongo
-  name: mongo
-spec:
-  type: ClusterIP
-  ports:
-    - port: 27017
-      targetPort: 27017
-  selector:
-    name: mongo
+        - containerPort: 80
